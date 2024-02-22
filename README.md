@@ -1,4 +1,4 @@
-## Screenschare | Free Game Source
+## Screenshare | Free Game Source
 Hi! I'm ender and i made this screenshare game along with the server code. Hope you enjoy ☺
 
 ## Instalation Instructions
