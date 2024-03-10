@@ -8,11 +8,11 @@ Download [v3.5.rbxl](https://github.com/RebornEnder/screenblox/releases/download
 ## Python Only Instructions
 These instructions are for the python version only skip to the next part if you have the exe version.
 
-Open terminal/cmd and run this command ```pip install flask gevent Pillow pydirectinput```
+Open terminal/cmd and run this command ```pip install flask gevent Pillow pydirectinput opencv-python```
 
 ## Setting up the game
 
-Open ``v3.rbxl`` in roblox studio and publish the game.. Then go to the **Game Settings** then navigate to **Security** and check **Allow HTTP Requests**. CLick Save and publish your new screensharing game!
+Open ``v3.5.rbxl`` in roblox studio and publish the game.. Then go to the **Game Settings** then navigate to **Security** and check **Allow HTTP Requests**. Click Save and publish your new screensharing game!
 
 ##  Making it work
 
