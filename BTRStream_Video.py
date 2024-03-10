@@ -12,7 +12,7 @@ app = Flask(__name__)
 config = {
     "robloxpath": "C:\\Users\\ender\\AppData\\Local\\Roblox\\Versions\\version-70a2467227df4077\\RobloxPlayerBeta.exe",
     "video_path": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox.mp4",
-    "video_mode": False,
+    "video_mode": True,
     "keyboard": False,
     "roblox": False,
     "resx": 190,
@@ -44,7 +44,7 @@ def process_video_hex():
     while success:
         frame = cv2.resize(frame, (config["resx"], config["resy"]))
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        hex_str = ','.join([f'"{r:02x}{g:02x}{b:02x}"' for b, g, r in rgb_frame.reshape(-1, 3)])
+        hex_str = ','.join([f'"{r:02x}{g:02x}{b:02x}"' for r, g, b in rgb_frame.reshape(-1, 3)])
         video_frames_hex.append(hex_str)
         
         frames_computed += 1
