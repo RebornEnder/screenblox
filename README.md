@@ -3,7 +3,7 @@ Hi! I'm ender and i made this screenshare game along with the server code. Hope 
 
 ## Instalation Instructions
 
-Download [v3.5.rbxl](https://github.com/RebornEnder/screenblox/releases/download/ihatetagnames/v3.5.rbxl) and [BTRStream_Video.py](https://github.com/RebornEnder/screenblox/releases/download/ihatetagnames/BTRStream_Video.py) or if you don't have **python** installed then instead of ``BtrStream_Video.py`` download **[the exe version (abandoned)](https://github.com/RebornEnder/screenblox/releases/download/Releases/StreamToGame.exe)**
+Download [v4.0.rbxl](https://github.com/RebornEnder/screenblox/releases/download/4.0/v4.rbxl) and [BTRStream_Video.py](https://github.com/RebornEnder/screenblox/releases/download/4.0/BTRStream_Video.py) or if you don't have **python** installed then instead of ``BtrStream_Video.py`` download **[the exe version (abandoned)](https://github.com/RebornEnder/screenblox/releases/download/Releases/StreamToGame.exe)**
 
 ## Python Only Instructions
 These instructions are for the python version only skip to the next part if you have the exe version.
