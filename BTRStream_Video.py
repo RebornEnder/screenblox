@@ -2,6 +2,7 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from PIL import Image, ImageGrab
 from os import system
+import os
 import cv2
 import subprocess
 import pydirectinput
@@ -11,7 +12,8 @@ app = Flask(__name__)
 # Configuration
 config = {
     "robloxpath": "C:\\Users\\ender\\AppData\\Local\\Roblox\\Versions\\version-70a2467227df4077\\RobloxPlayerBeta.exe",
-    "video_path": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox.mp4",
+    "video_path": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox30.mp4",
+    "video_processed": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox30.videotxt",
     "video_mode": False,
     "keyboard": False,
     "roblox": False,
@@ -28,34 +30,60 @@ video_frames_hex = []
 
 # Set needed variables for video settings
 video_lenght = 0
-video_fps = 0
 
 # Whitelisted Keys
 valid_keys = {"w", "a", "s", "d", "i", "o", "left", "right", "space"}
+
+def save_hex_to_file(hex_data, video_path):
+    save_prompt = input("Do you want to save the processed frames to a text file? (y/n): ").lower()
+    if save_prompt == 'y':
+        text_file_name = video_path.rsplit('.', 1)[0] + '.videotxt'
+        with open(text_file_name, 'w') as file:
+            for hex_str in hex_data:
+                file.write(f"{hex_str}\n")
+        print(f"Frames saved to {text_file_name}")
+    else:
+        print("Frames were not saved.")
+
+
+def adjust_fps_to_60(frame, target_fps, current_fps):
+    if current_fps > target_fps:
+        skip_rate = round(current_fps / target_fps)
+        return [frame] if frame % skip_rate == 0 else []
+    elif current_fps < target_fps:
+        duplicate_rate = round(target_fps / current_fps)
+        return [frame] * duplicate_rate
+    else:
+        return [frame]
 
 def process_video_hex():
     cap = cv2.VideoCapture(config["video_path"])
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # Total number of frames in the video
     vid_lenght = total_frames - 1
     vid_fps = int(cap.get(cv2.CAP_PROP_FPS))
-    success, frame = cap.read()
-    frames_computed = 0
+    frame_counter = 0
+    adjusted_frames_counter = 0
     
-    while success:
-        frame = cv2.resize(frame, (config["resx"], config["resy"]))
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        hex_str = ','.join([f'"{r:02x}{g:02x}{b:02x}"' for r, g, b in rgb_frame.reshape(-1, 3)])
-        video_frames_hex.append(hex_str)
-        
-        frames_computed += 1
-        print(f'Frames Processed: {frames_computed}/{total_frames}', end='\r')  # '\r' returns the cursor to the start of the line
-
+    while True:
         success, frame = cap.read()
+        if not success:
+            break
+        for _ in adjust_fps_to_60(frame_counter, 60, vid_fps):
+            frame = cv2.resize(frame, (config["resx"], config["resy"]))
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            hex_str = ','.join([f'"{r:02x}{g:02x}{b:02x}"' for r, g, b in rgb_frame.reshape(-1, 3)])
+            video_frames_hex.append(hex_str)
+            adjusted_frames_counter += 1
+            print(f'Frames Adjusted & Processed: {adjusted_frames_counter}/{total_frames}', end='\r')
 
-    print(f'\nAll frames processed: {frames_computed}/{total_frames}.')  # New line after processing is complete
+        frame_counter += 1
+
+    print(f'\nAll frames processed and adjusted to 60 FPS: {adjusted_frames_counter}/{total_frames}.')
     cap.release()
 
-    return vid_lenght, vid_fps
+    # Adjust video_length based on new FPS
+    vid_lenght = adjusted_frames_counter - 1
+    return vid_lenght
 
 def generate_rgb():
     screenshot = ImageGrab.grab().resize((config["resx"], config["resy"]))
@@ -82,10 +110,8 @@ else:
     
 @app.route('/vidsett')
 def video_settings():
-    print(video_lenght)
-    print(video_fps)
     if config["video_mode"]:
-        return {"LEN": [video_lenght, video_fps]}
+        return {"LEN": [video_lenght, 60]}
     else:
         return {"LEN": [0, 0]}
 
@@ -120,8 +146,16 @@ def roblox_join():
 
 if __name__ == '__main__':
     system("title Screenshare Encoder / Made by @RebornEnder (zdir)")
-    if config["video_mode"]:
-        video_lenght, video_fps = process_video_hex()
+
+    if config["video_mode"] and config["video_processed"] and os.path.exists(config["video_processed"]):
+        with open(config["video_processed"], 'r') as file:
+            video_frames_hex = [line.strip() for line in file.readlines()]
+        print(f"Loaded frames from {config['video_processed']}")
+        video_lenght = len(video_frames_hex) - 1
+    elif config["video_mode"]:
+        video_length = process_video_hex()
+        save_hex_to_file(video_frames_hex, config["video_path"])
+
     print(f'> Output Resolution: {config["resx"]}x{config["resy"]}. <')
     print(f'> Keyboard Status: {str(config["keyboard"])}. <')
     print(f'> Roblox GameJoin Status: {str(config["roblox"])}. <')
