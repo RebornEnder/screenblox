@@ -12,7 +12,7 @@ app = Flask(__name__)
 config = {
     "robloxpath": "C:\\Users\\ender\\AppData\\Local\\Roblox\\Versions\\version-70a2467227df4077\\RobloxPlayerBeta.exe",
     "video_path": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox.mp4",
-    "video_mode": True,
+    "video_mode": False,
     "keyboard": False,
     "roblox": False,
     "resx": 190,
