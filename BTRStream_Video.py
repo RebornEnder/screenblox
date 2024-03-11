@@ -12,8 +12,8 @@ app = Flask(__name__)
 # Configuration
 config = {
     "robloxpath": "C:\\Users\\ender\\AppData\\Local\\Roblox\\Versions\\version-70a2467227df4077\\RobloxPlayerBeta.exe",
-    "video_path": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox30.mp4",
-    "video_processed": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\giftbox30.videotxt",
+    "video_path": "C:\\Users\\ender\\OneDrive\\Pulpit\\Stuff\\Videos\\piano turns into a ps2.mp4",
+    "video_processed": "",
     "video_mode": False,
     "keyboard": False,
     "roblox": False,
@@ -58,8 +58,7 @@ def adjust_fps_to_60(frame, target_fps, current_fps):
 
 def process_video_hex():
     cap = cv2.VideoCapture(config["video_path"])
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # Total number of frames in the video
-    vid_lenght = total_frames - 1
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     vid_fps = int(cap.get(cv2.CAP_PROP_FPS))
     frame_counter = 0
     adjusted_frames_counter = 0
@@ -80,10 +79,7 @@ def process_video_hex():
 
     print(f'\nAll frames processed and adjusted to 60 FPS: {adjusted_frames_counter}/{total_frames}.')
     cap.release()
-
-    # Adjust video_length based on new FPS
-    vid_lenght = adjusted_frames_counter - 1
-    return vid_lenght
+    return len(video_frames_hex) - 1
 
 def generate_rgb():
     screenshot = ImageGrab.grab().resize((config["resx"], config["resy"]))
@@ -153,7 +149,7 @@ if __name__ == '__main__':
         print(f"Loaded frames from {config['video_processed']}")
         video_lenght = len(video_frames_hex) - 1
     elif config["video_mode"]:
-        video_length = process_video_hex()
+        video_lenght = process_video_hex()
         save_hex_to_file(video_frames_hex, config["video_path"])
 
     print(f'> Output Resolution: {config["resx"]}x{config["resy"]}. <')
