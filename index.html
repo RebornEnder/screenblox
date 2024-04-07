@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Renderer</title>
+<style>
+  canvas {
+    border: 1px solid black;
+  }
+</style>
+</head>
+<body>
+<input type="text" id="urlInput" placeholder="Enter image URL">
+<button id="startBtn">Start</button>
+<button id="stopBtn" disabled>Stop</button>
+<span id="fpsCounter">FPS: 0</span>
+<br>
+<label for="scaleSlider">Scale:</label>
+<input type="range" min="1" max="10" value="1" id="scaleSlider">
+<br>
+<canvas id="canvas" width="190" height="90"></canvas>
+<script>
+  let isRendering = false;
+  let fpsInterval, startTime, now, then, elapsed;
+  let frames = 0;
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const urlInput = document.getElementById('urlInput');
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const fpsCounter = document.getElementById('fpsCounter');
+  const scaleSlider = document.getElementById('scaleSlider');
+  const buffer = [];
+  const bufferLimit = 30; // Adjust the buffer limit as needed
+  let scale = 1;
+  let imageWidth = 190;
+  let imageHeight = 90;
+
+  startBtn.addEventListener('click', startRendering);
+  stopBtn.addEventListener('click', stopRendering);
+  scaleSlider.addEventListener('input', updateScale);
+
+  function startRendering() {
+    const url = urlInput.value.trim();
+    if (!isValidUrl(url)) {
+      console.log('Invalid URL');
+      return;
+    }
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    console.log('Rendering started');
+    
+    isRendering = true;
+    fetchImageResolution(url);
+    startFPSCounter();
+    bufferImages(url);
+    renderBufferedImages();
+  }
+
+  function stopRendering() {
+    isRendering = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    console.log('Rendering stopped');
+    clearInterval(fpsInterval);
+    fpsCounter.textContent = 'FPS: 0';
+    frames = 0;
+  }
+
+  function fetchImageResolution(url) {
+    fetch(url + '/res')
+      .then(response => response.json())
+      .then(data => {
+        if (data.RES && data.RES.length === 2) {
+          const [width, height] = data.RES;
+          imageWidth = width;
+          imageHeight = height;
+          updateCanvasSize();
+          console.log('Canvas size adjusted:', width, 'x', height);
+        }
+      })
+      .catch(error => console.error('Error fetching image resolution:', error));
+  }
+
+  async function bufferImages(url) {
+    while (isRendering) {
+      try {
+        const response = await fetch(url);
+        const imageData = await response.json();
+        buffer.push(imageData);
+        console.log('Image buffered');
+        if (buffer.length > bufferLimit) {
+          buffer.splice(0, bufferLimit / 2); // Remove half of the buffered images
+        }
+      } catch (error) {
+        console.error('Error buffering image:', error);
+      }
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function renderBufferedImages() {
+    while (isRendering) {
+      if (buffer.length > 0) {
+        const imageData = buffer.shift();
+        renderImageData(imageData);
+        updateFPSCounter();
+      } else {
+        await sleep(100);
+      }
+    }
+  }
+
+  function renderImageData(imageData) {
+    let index = 0;
+
+    for (let y = 0; y < imageHeight; y++) {
+      for (let x = 0; x < imageWidth; x++) {
+        const color = '#' + imageData.HEX[index];
+        ctx.fillStyle = color;
+        ctx.fillRect(x * scale, y * scale, scale, scale);
+        index = (index + 1) % imageData.HEX.length;
+      }
+    }
+  }
+
+  function isValidUrl(url) {
+    // Very basic URL validation
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
+  function startFPSCounter() {
+    fpsInterval = setInterval(() => {
+      updateFPSCounter();
+    }, 1000);
+    then = Date.now();
+    startTime = then;
+  }
+
+  function updateFPSCounter() {
+    now = Date.now();
+    elapsed = now - then;
+    frames++;
+
+    if (elapsed > 1000) {
+      const fps = Math.round(frames / (elapsed / 1000));
+      fpsCounter.textContent = 'FPS: ' + fps;
+      then = now;
+      frames = 0;
+    }
+  }
+
+  function updateScale() {
+    scale = parseInt(scaleSlider.value);
+    updateCanvasSize();
+  }
+
+  function updateCanvasSize() {
+    canvas.width = imageWidth * scale;
+    canvas.height = imageHeight * scale;
+    clearCanvas();
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+</script>
+</body>
+</html>
