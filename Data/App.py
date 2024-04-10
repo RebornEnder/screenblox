@@ -152,9 +152,9 @@ if __name__ == '__main__':
         video_lenght = process_video_hex()
         save_hex_to_file(video_frames_hex, config["video_path"])
 
-    print(f'> Output Resolution: {config["resx"]}x{config["resy"]}. <')
-    print(f'> Keyboard Status: {str(config["keyboard"])}. <')
-    print(f'> Roblox GameJoin Status: {str(config["roblox"])}. <')
-    print(f'> Hosting Server On: http://127.0.0.1:8080. <\n')
+    print(f'[+] Output Resolution: {config["resx"]}x{config["resy"]}.')
+    print(f'[+] Keyboard Status: {str(config["keyboard"])}.')
+    print(f'[+] Roblox GameJoin Status: {str(config["roblox"])}.')
+    print(f'[+] Hosting Server On: http://127.0.0.1:8080.\n')
     server = WSGIServer(('127.0.0.1', 8080), app)
     server.serve_forever()
