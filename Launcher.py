@@ -21,10 +21,10 @@ def main():
             with open(Version, mode="xb") as file:
                 file.write(newversion.content)
             print("[+] Launching...\n")
-            exec(open(AppPath).read())
+            os.system(f"python {AppPath}")
         elif newversion.json()["Version"] < json.load(open(Version))["Version"] + 0.1:
             print("[+] Up to date, launching...\n")
-            exec(open(AppPath).read())
+            os.system(f"python {AppPath}")
         else:
             print("[-] Out of date, updating...")
             newapp = requests.get(Github + "Data/App.py")
@@ -33,7 +33,7 @@ def main():
             with open(Version, mode="wb") as file:
                 file.write(newversion.content)
             print("[+] Launching...\n")
-            exec(open(AppPath).read())
+            os.system(f"python {AppPath}")
     except Exception as e:
         print("[-] Update checking/downloading failed!\n", e)
         exec(open(AppPath).read())
