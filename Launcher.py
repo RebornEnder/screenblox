@@ -3,7 +3,7 @@ import json
 import os
 
 Github = "https://raw.githubusercontent.com/RebornEnder/screenblox/main/"
-DataPath = os.getcwd() + "\\ScreenshareData"
+DataPath = os.environ['USERPROFILE'] + "\\ScreenshareData"
 Version = f"{DataPath}\\Version.json"
 AppPath = f"{DataPath}\\App.py"
 
