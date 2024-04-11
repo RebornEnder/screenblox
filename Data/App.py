@@ -48,10 +48,10 @@ def save_config():
         json.dump(config, f, indent=4)
 
 def edit_config():
-    edit_prompt = input("Do you want to edit the configuration? (y/n): ").lower()
+    edit_prompt = input("[?] Do you want to edit the configuration? (y/n): ").lower()
     if edit_prompt == 'y':
         for key in config.keys():
-            new_value = input(f"Enter value for {key} (current: {config[key]}): ")
+            new_value = input(f"[~] Enter value for {key} (current: {config[key]}): ")
             if new_value.lower() == 'true':
                 config[key] = True
             elif new_value.lower() == 'false':
@@ -99,11 +99,11 @@ def process_video_hex():
             hex_str = ','.join([f'"{r:02x}{g:02x}{b:02x}"' for r, g, b in rgb_frame.reshape(-1, 3)])
             video_frames_hex.append(hex_str)
             adjusted_frames_counter += 1
-            print(f'Frames Adjusted & Processed: {adjusted_frames_counter}/{total_frames}', end='\r')
+            print(f'[+] Frames Adjusted & Processed: {adjusted_frames_counter}/{total_frames}', end='\r')
 
         frame_counter += 1
 
-    print(f'\nAll frames processed and adjusted to 60 FPS: {adjusted_frames_counter}/{total_frames}.')
+    print(f'\n[+] All frames processed and adjusted to 60 FPS: {adjusted_frames_counter}/{total_frames}.')
     cap.release()
     return len(video_frames_hex) - 1
 
