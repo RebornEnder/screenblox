@@ -4,6 +4,8 @@ from PIL import Image, ImageGrab
 from os import system
 import os
 import cv2
+import json
+import requests
 import subprocess
 import pydirectinput
 
@@ -19,11 +21,10 @@ config = {
     "roblox": False,
     "resx": 190,
     "resy": 90
-    #"resx": 320,
-    #"resy": 240
-    #"resx": 240,
-    #"resy": 135
 }
+
+# Config file
+config_file = "Config.json"
 
 # Pre-process and store video frames
 video_frames_hex = []
@@ -33,6 +34,31 @@ video_lenght = 0
 
 # Whitelisted Keys
 valid_keys = {"w", "a", "s", "d", "i", "o", "left", "right", "space"}
+
+def load_config():
+    global config
+    if os.path.exists(config_file) and os.path.getsize(config_file) > 0:
+        with open(config_file, "r") as f:
+            config = json.load(f)
+    else:
+        save_config()
+
+def save_config():
+    with open(config_file, "w") as f:
+        json.dump(config, f, indent=4)
+
+def edit_config():
+    edit_prompt = input("Do you want to edit the configuration? (y/n): ").lower()
+    if edit_prompt == 'y':
+        for key in config.keys():
+            new_value = input(f"Enter value for {key} (current: {config[key]}): ")
+            if new_value.lower() == 'true':
+                config[key] = True
+            elif new_value.lower() == 'false':
+                config[key] = False
+            elif new_value:
+                config[key] = new_value
+        save_config()
 
 def save_hex_to_file(hex_data, video_path):
     save_prompt = input("Do you want to save the processed frames to a text file? (y/n): ").lower()
@@ -142,6 +168,8 @@ def roblox_join():
 
 if __name__ == '__main__':
     system("title Screenshare Encoder / Made by @RebornEnder (zdir)")
+    load_config()
+    edit_config()
 
     if config["video_mode"] and config["video_processed"] and os.path.exists(config["video_processed"]):
         with open(config["video_processed"], 'r') as file:
