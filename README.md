@@ -3,7 +3,7 @@ Hi! I'm ender and i made this screenshare game along with the server code. Hope 
 
 ## Instalation Instructions
 
-Download [v4.0.rbxl](https://github.com/RebornEnder/screenblox/releases/download/4.0/v4.rbxl) and [Launcher.py](https://github.com/RebornEnder/screenblox/releases/download/4.1/Launcher.py)
+Download [v4.0.rbxl](https://github.com/RebornEnder/screenblox/releases/download/4.0/v4.rbxl) and [Launcher.py](https://github.com/RebornEnder/screenblox/releases/download/Launcher/Launcher.py)
 
 Open terminal/cmd and run this command ```pip install flask gevent Pillow pydirectinput opencv-python requests```
 
