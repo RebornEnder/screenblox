@@ -18,7 +18,7 @@ config = {
     "video_processed": "",
     "video_mode": False,
     "keyboard": False,
-    "mouse": True,
+    "mouse": False,
     "roblox": False,
     "resx": 190,
     "resy": 90
