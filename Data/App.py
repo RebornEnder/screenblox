@@ -1,7 +1,7 @@
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from PIL import Image, ImageGrab
-from os import system
+import os
 import os
 import cv2
 import json
@@ -18,6 +18,7 @@ config = {
     "video_processed": "",
     "video_mode": False,
     "keyboard": False,
+    "mouse": True,
     "roblox": False,
     "resx": 190,
     "resy": 90
@@ -35,6 +36,16 @@ video_lenght = 0
 # Whitelisted Keys
 valid_keys = {"w", "a", "s", "d", "i", "o", "left", "right", "space"}
 
+def findroblox():
+    versions = os.path.join(os.getenv("LOCALAPPDATA"), "Roblox", "Versions") 
+    if not os.path.exists(versions):
+        return ""    
+    for version in os.listdir(versions):
+        exe = os.path.join(versions, version, "RobloxPlayerBeta.exe")      
+        if os.path.exists(exe):
+            return exe
+    return ""
+
 def load_config():
     global config
     if os.path.exists(config_file) and os.path.getsize(config_file) > 0:
@@ -49,13 +60,15 @@ def save_config():
 
 def edit_config():
     edit_prompt = input("[?] Do you want to edit the configuration? (y/n): ").lower()
-    if edit_prompt == 'y':
+    if edit_prompt == "y":
         for key in config.keys():
             new_value = input(f"[~] Enter value for {key} (current: {config[key]}): ")
-            if new_value.lower() == 'true':
+            if new_value.lower() == "true":
                 config[key] = True
-            elif new_value.lower() == 'false':
+            elif new_value.lower() == "false":
                 config[key] = False
+            elif isinstance(new_value, int):
+                config[key] = int(new_value)
             elif new_value:
                 config[key] = new_value
         save_config()
@@ -147,11 +160,19 @@ def keyboard_status():
 
 @app.route('/keysend')
 def keyboard_type():
-    key = request.args.get('key', '').lower()
+    key = request.args.get('key', '', type=str).lower()
     if config["keyboard"] and key in valid_keys:
         pydirectinput.press(key)
         return {"KEYSEND": True}
     return {"KEYSEND": False}
+
+@app.route('/mousclick')
+def mouse_click():
+    x, y, btn = request.args.get('x', 0, type=int), request.args.get('y', 0, type=int), request.args.get('btn', 0, type=str)
+    if config["mouse"]:
+        pydirectinput.click(x, y, button=btn)
+        return {"MOUSECLICK": True}
+    return {"MOUSECLICK": False}
 
 @app.route('/roblox')
 def roblox_status():
@@ -167,9 +188,13 @@ def roblox_join():
     return {"ROBLOXJOIN": False}
 
 if __name__ == '__main__':
-    system("title Screenshare Encoder / Made by @RebornEnder (zdir)")
+    os.system("title Screenshare Encoder / Made by @RebornEnder (zdir)")
+
     load_config()
     edit_config()
+
+    if config["robloxpath"] == "" and config["roblox"]:
+        config["robloxpath"] = findroblox()
 
     if config["video_mode"] and config["video_processed"] and os.path.exists(config["video_processed"]):
         with open(config["video_processed"], 'r') as file:
@@ -182,7 +207,9 @@ if __name__ == '__main__':
 
     print(f'[+] Output Resolution: {config["resx"]}x{config["resy"]}.')
     print(f'[+] Keyboard Status: {str(config["keyboard"])}.')
+    print(f'[+] Mouse Status: {str(config["mouse"])}.')
     print(f'[+] Roblox GameJoin Status: {str(config["roblox"])}.')
+    print(f'[+] Roblox Executable Path: {config["robloxpath"]}.')
     print(f'[+] Hosting Server On: http://127.0.0.1:8080.\n')
     server = WSGIServer(('127.0.0.1', 8080), app)
     server.serve_forever()
